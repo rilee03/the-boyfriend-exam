@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body{
+            background-color: #F8F5E9;
+            color: #243F30;
+            display: flex;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        button {
+            background-color: #243F30;
+            color: #F8F5E9;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        #quiz-screen button {
+            background-color: #DDE8D5;
+            color: #243F30;
+            width: 200px;
+            border: 2px solid #DDE8D5;
+            transition: 0.2s;
+        }
+        #quiz-screen button:hover{
+            background-color: #C3D2BD;
+            transform: translateY(-2px);
+        }
+        div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        #feedback {
+            background-color: #DDE8D5;
+            color: black;
+            padding: 12px 24px;
+            border-radius: 10px;
+        }
+        #quiz-screen {
+            background-color: #243F30;
+            color: #F8F5E9;
+            margin: auto;
+            padding: 16px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 20px rgba(36, 63, 48, 0.18);
+        }
+        @media (min-width: 600px) {
+            #quiz-screen {
+                padding: 32px;
+            }
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Boyfriend Exam</title>
+</head>
+<body>
+    <div id="welcome-screen">
+    <h1>💚THE BOYFRIEND EXAM💚</h1>
+    <p>Welcome, Connarita.</p>
+    <p>Think you know your girlfriend?</p>
+    <button id="start-button">Start the Exam</button>
+    <p>Warning: Your girlfriend is judging your answers.</p>
+    </div>
+    <div id="quiz-screen" style="display: none;">
+        <h2 id="question-number">Question 1</h2>
+        <p id="question-text">What drink could win some serious girlfriend points?</p>
+        <div id="answers-container"></div>
+        <p id="feedback" style="display: none;"></p>
+        <button id="next-button" style="display: none">NEXT</button>
+    </div>
+    <div id="results-screen" style="display: none;">
+        <h2>THE BOYFRIEND EXAM</h2>
+        <h1>Your Final Score 💚</h1>
+        <h1 id="final-score"></h1>
+        <p>Not bad, Connarita...</p>
+        <p id="message"></p>
+    </div>
+    <script>
+        const welcome_screen = document.getElementById("welcome-screen");
+        const quiz_screen = document.getElementById("quiz-screen");
+        const start_button = document.getElementById("start-button");
+        const answers_container = document.getElementById("answers-container");
+        const feedback = document.getElementById("feedback");
+        const question_text = document.getElementById("question-text");
+        const next_button = document.getElementById("next-button");
+        const question_number = document.getElementById("question-number");
+        const results_screen = document.getElementById("results-screen");
+        const final_score = document.getElementById("final-score");
+        const message = document.getElementById("message");
+        const questions = [
+            {
+                question: "What drink could win some serious girlfriend points?",
+                answers: [
+                    "Mojito",
+                    "Margarita",
+                    "Sex on the Beach",
+                    "Strawberry Daiquiri"
+                ],
+                correctAnswer: "Margarita",
+                correctFeedback: "OKAY, you might survive. 🍹 Don't let it go to your head bimbo.",
+                wrongFeedback: "WRONG! 😭 The confidence is concerning. Better luck on the next question, buddy."
+            }, {
+                question: "What is my biggest talent?",
+                answers: [
+                    "Being right",
+                    "Looking cute",
+                    "Getting my way",
+                    "All of the above"
+                ],
+                correctAnswer: "All of the above",
+                correctFeedback: "YES MA'AM, and the list goes on and on.",
+                wrongFeedback: "You really sat there and chose an answer other than ALL OF THE ABOVE?💀 We need to talk."
+            }, {
+                question: "What makes me feel most loved?",
+                answers: [
+                    "Words of affirmation",
+                    "Quality time", 
+                    "Physical touch",
+                    "Thoughtful little gestures"
+                ],
+                correctAnswer: "Thoughtful little gestures",
+                correctFeedback: "Look at you really paying attention to the little things.❤️",
+                wrongFeedback: "WRONG, it's the little things that count Connar.😭"
+            }, {
+                question: "What makes me the most mad?",
+                answers: [
+                    "You not laughing at my jokes",
+                    "You forgetting something I told you",
+                    "You picking your nails",
+                    "You bossing me around"
+                ],
+                correctAnswer: "You forgetting something I told you",
+                correctFeedback: "EXACTLY. 😤 Listen when I am talking to you, you may proceed.",
+                wrongFeedback: "Wow. So you really don't be listening to me. Interesting. Very Interesting.🫠"
+            }
+        ]
+        let currentQuestionIndex = 0;
+        let answerSelected = false;
+        let score = 0;
+
+
+        start_button.addEventListener("click", function() {
+            welcome_screen.style.display = "none";
+            quiz_screen.style.display = "flex";
+            displayQuestion();
+        });
+
+        function displayQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            question_text.textContent = currentQuestion.question;
+            question_number.textContent = "Question " + (currentQuestionIndex + 1);
+
+            answers_container.innerHTML = "";
+            
+            currentQuestion.answers.forEach((answer) => {
+                const answerButton = document.createElement("button");
+                answerButton.textContent = answer;
+
+                answerButton.addEventListener("click", function() {
+                    if (answerSelected === true) {
+                        return;
+                    }
+                    answerSelected = true;
+
+                    if (answer === currentQuestion.correctAnswer) {
+                        score++;
+                        feedback.textContent = currentQuestion.correctFeedback;
+                    } else {
+                        feedback.textContent = currentQuestion.wrongFeedback;
+                    }
+                    feedback.style.display = "block";
+                    next_button.style.display = "block";
+                });
+                answers_container.appendChild(answerButton);
+            });
+            
+        }
+
+        next_button.addEventListener("click", function () {
+            answerSelected = false;
+            feedback.style.display = "none";
+            next_button.style.display = "none";
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= questions.length) {
+                quiz_screen.style.display = "none";
+                results_screen.style.display = "flex";
+                final_score.textContent = score + " / " + questions.length;
+                message.style.display = "block";
+
+                if (score == 4) {
+                    message.textContent = "100%?! How do you know me so well, werido?\nJokes aside, I love you honey and you did a very good job.\nI hope you liked my quiz, please leave a review. ❤️";
+                } else if (score == 3 || score == 2) {
+                    message.textContent = "Not bad, Connarita...but I think you need to review the study guide.🤓\nJokes aside, I love you honey and you did a decent job.\nI hope you liked my quiz, please leave a review. ❤️";
+                } else {
+                    message.textContent = "Baby, this is embarrassing for the both of us.💀\nJokes aside, I love you honey, but you did a terrible job.\nI hope you liked my quiz, please leave a review. ❤️";
+                }
+            } else {
+                displayQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
